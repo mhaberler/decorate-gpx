@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 import gpxpy
 from datetime import datetime, timedelta
@@ -14,11 +15,11 @@ def process_point(lat: float, lon: float, alt: float, time: datetime) -> None:
     print(f"Processing point: lat={lat:.6f}, lon={lon:.6f}, alt={alt:.1f}, time={time}")
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: script.py <gpx_file>")
-        sys.exit(1)
-
-    gpx_file = sys.argv[1]
+    # if len(sys.argv) != 2:
+    #     print("Usage: script.py <gpx_file>")
+    #     sys.exit(1)
+    gpx_file = "0826_15wcyrfz8_20250404-hilmar.gpx"
+    # gpx_file = sys.argv[1]
     last_processed_time = None
     min_time_diff = timedelta(minutes=15)
 
@@ -33,6 +34,7 @@ def main():
 
                     # Skip if we don't have time information
                     if not current_time:
+                        print("no time")
                         continue
 
                     # Process first point or if enough time has passed
