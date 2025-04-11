@@ -1,7 +1,8 @@
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
-from datetime import datetime
-from typing import List
+from datetime import datetime, timedelta
+import sys
+from typing import List, Callable
 
 @dataclass
 class WayPoint:
@@ -12,6 +13,25 @@ class WayPoint:
     name: str
     comment: str
     description: str
+
+def process_waypoints(waypoints: List[WayPoint],
+                     callback: Callable[[float, float, float, datetime], None],
+                     min_time_diff: timedelta = timedelta(minutes=15)) -> None:
+    last_processed_time = None
+
+    for wp in waypoints:
+        current_time = wp.time
+
+        # Process first point or if enough time has passed
+        if (last_processed_time is None or
+            current_time - last_processed_time >= min_time_diff):
+            callback(
+                wp.lat,
+                wp.lon,
+                wp.elevation,
+                current_time
+            )
+            last_processed_time = current_time
 
 def parse_gpx_file(filepath: str) -> List[WayPoint]:
     # Parse XML
@@ -49,18 +69,34 @@ def parse_gpx_file(filepath: str) -> List[WayPoint]:
 
     return waypoints
 
+def process_point(lat: float, lon: float, alt: float, time: datetime) -> None:
+    """Process a single GPX point.
+
+    Args:
+        lat: Latitude in degrees
+        lon: Longitude in degrees
+        alt: Altitude in meters
+        time: Timestamp of the point
+    """
+    print(f"Processing point: lat={lat:.6f}, lon={lon:.6f}, alt={alt:.1f}, time={time}")
+
 def main():
-    gpx_file = "0826_15wcyrfz8_20250404-hilmar.gpx"
-    waypoints = parse_gpx_file(gpx_file)
+    if len(sys.argv) != 2:
+        print("Usage: script.py <gpx_file>")
+        sys.exit(1)
 
-    print(f"Found {len(waypoints)} waypoints")
+    gpx_file = sys.argv[1]
 
-    # Print first few points as example
-    for wp in waypoints[:5]:
-        print(f"\nWaypoint at {wp.lat}, {wp.lon}")
-        print(f"Time: {wp.time}")
-        print(f"Elevation: {wp.elevation}m")
-        print(f"Comment: {wp.comment}")
+    try:
+        waypoints = parse_gpx_file(gpx_file)
+        process_waypoints(waypoints, process_point)
+
+    except FileNotFoundError:
+        print(f"Error: File '{gpx_file}' not found")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error processing GPX file: {e}")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
