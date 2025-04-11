@@ -16,7 +16,7 @@ class WayPoint:
 
 def process_waypoints(waypoints: List[WayPoint],
                      callback: Callable[[float, float, float, datetime], None],
-                     min_time_diff: timedelta = timedelta(minutes=15)) -> None:
+                     min_time_diff: timedelta = timedelta(minutes=120)) -> None:
     last_processed_time = None
 
     for wp in waypoints:
