@@ -78,7 +78,7 @@ def process_waypoints(waypoints: List[WayPoint],
             )
             last_processed_time = current_time
 
-def parse_gpx_file(filepath: str) -> List<WayPoint]:
+def parse_gpx_file(filepath: str) -> List[WayPoint]:
     # Parse XML
     tree = ET.parse(filepath)
     root = tree.getroot()
