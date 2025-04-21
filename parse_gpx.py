@@ -55,6 +55,7 @@ def get_wind_data(lat: float, lon: float, time: datetime) -> object:
         "start_date": time.date().isoformat(),
         "end_date": time.date().isoformat(),
         "models": "icon_d2",
+        "cell_selection": "nearest",
     }
 
     try:
